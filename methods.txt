@@ -1,0 +1,10 @@
+Application.helloworld[];
+Application.random [Min:int,Max:int];
+Application.add[
+    PersonsArray:{
+        Person:(
+            Name:string,
+            Age:int:true
+        )
+    }
+];

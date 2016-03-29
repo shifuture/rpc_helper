@@ -1,0 +1,187 @@
+body, td, select {
+    font-family: Arial;
+    font-size: 12px;
+}
+
+table , #header div, #inputData {
+    background-color: #fcfcfc;
+    border: 1px solid #dedede;
+}
+
+#inputData input {
+    background: rgb(246, 246, 246) url('../images/style1_txt_bg.gif') repeat-x scroll center top;
+    border: 1px solid #7b9ebd;
+    color: rgb(51, 51, 51);
+    font-weight: normal;
+}
+
+#inputData input.button, input.button {
+    border: 1px solid rgb(198, 199, 202);
+    background: rgb(228, 228, 228) url('../images/style1_btn_bg.gif') repeat-x scroll center top;
+    color: rgb(51, 51, 51);
+    font-weight: normal;
+}
+
+#inputData input.button:hover, input.button:hover {
+    color: rgb(90, 90, 90);
+}
+
+#inputData input.button {
+    border: 1px solid #7b9ebd;
+}
+
+select {
+    border: 1px solid rgb(204, 204, 204);
+    background: rgb(246, 246, 246) url('../images/style1_txt_bg.gif') repeat-x scroll center top;
+    color: rgb(51, 51, 51);
+    font-weight: normal;
+}
+
+#parsedResponse {
+    border: 1px solid #e1e1e1;
+    padding: 8px 0px 8px 0px;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.label {
+    font-weight: bold;
+    padding-right: 8px;
+}
+
+.intense {
+    color: #555555; 
+    font-family: sans-serif;
+    font-weight: bold;
+    background-color: #ffffff;
+}
+
+.description {
+	width: 500px;
+}
+
+a:link, a:visited, a:active {
+    font-weight: bold;
+    color: #000080;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#header span {
+    font-weight: bold;
+}
+
+div.error {
+    color: #fa3134;
+}
+
+#header div {
+    float: left;
+    width: auto;
+    clear: both;
+    margin: 5px 0px;
+    padding: 5px 5px;
+}
+
+#links {
+    position: relative;
+    display: block;
+    margin: 0px 0px;
+    width: 100%;
+}
+
+#mainTable {
+    margin: 5px 0px;
+}
+
+#inputData {
+    float: left;
+    clear: both;
+    margin-top: 17px;
+    padding: 3px;
+    width: auto;
+}
+
+textarea {
+    border: 1px dashed #e1e1e1;
+    width: 100%;
+    height: 150px;
+}
+
+#helpers {
+    width: 100%;
+    padding: 10px 0px;
+}
+
+#resultData , #helpers {
+    float: left;
+    width: auto;
+    clear: both;
+}
+
+#loader {
+    position: fixed;
+    display: block;
+    padding: 5px;
+    top: 10px;
+    right: 10px;
+    color: white;
+    background-color: #74c5f6;
+}
+
+#loader img {
+    vertical-align: middle;
+}
+
+.enabled {
+    visibility: visible;
+}
+
+.disabled {
+    opacity: 0.2;
+}
+
+.disabled table {
+    opacity: 0.2;
+}
+
+.nulled {
+    opacity: 0.2;
+}
+
+.nulled table {
+    opacity: 0.2;
+}
+
+input.nulled {
+    opacity: 1;
+}
+
+select.nulled {
+    opacity: 1;
+}
+
+pre {
+    margin: 0px;
+}
+
+pre#request {
+    padding: 10px;
+    color: #000000;
+}
+
+pre#headers {
+    padding: 10px;
+    color: #333333;
+}
+
+pre#response {
+    padding: 5px 10px 0px 10px;
+    color: #000000;
+}
