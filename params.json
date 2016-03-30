@@ -1,0 +1,6 @@
+{
+  "name": "Rpc helper",
+  "tagline": "help to develop the interface like jsonrpc and xmlrpc",
+  "body": "# RPC开发助手(RPC HELPER)\r\n\r\n## 目的\r\n\r\n 构建一个标准前端接口测试工具, 以便衔接前后端工程师的开发\r\n\r\n## 特性 \r\n  \r\n - 支持json-rpc协议\r\n - 支持xml-rpc协议\r\n\r\n## 支持\r\n\r\n shifuture@gmail.com\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
