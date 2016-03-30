@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <title>jsonrpc/xmlrpc</title>
+        <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/highlight.css" rel="stylesheet" type="text/css" />
+        <script src="//cdn.bootcss.com/jquery/1.2.6/jquery.min.js" type="text/javascript"></script>
+        <script src="js/jquery.ajax_upload.0.3.js" type="text/javascript"></script>
+        <script src="js/functions.js" type="text/javascript"></script>
+    </head>
+    <body onload="hideLoad(); createUploadElements();">
+        <span id="loader" style="display:block;"><img src="images/loader.gif" alt="Loading"/> Loading...</span>
+        <div id="header">
+            <span class="intense">应用测试器 - jsonrpc/xmlrpc</span>
+            <br/>
+            <div>
+                <form name="reset" method="post" action="index.php">
+                    <input type="hidden" name="RESET" value="1" />
+                    <input class="button" type="submit" value="重置所有"/>
+                </form>
+            </div>
+            <br/>
+
+                                <div id="serversForm">
+                    <form method="get" action="index.php">
+                    <span>选择服务器:</span>
+                    <select name="server" id="serverSelect" onchange="chooseServer();">
+                                                    <option value="xml" selected="selected" >xml</option>
+                                                    <option value="json" >json</option>
+                                            </select>
+                    <input class="button" type="submit" value="OK" onclick="" />
+                    </form>
+                </div>
+                
+                <span id="sessionsFormContainer">
+                                    </span>
+
+                <div id="functionsForm">
+                    <form method="get" action="index.php">
+                    <span>选择函数:</span>
+                    <select id="functionsSelect" name="f" onchange="chooseFunction();"><option value="Application.add" selected="selected">Application.add</option><option value="Application.helloworld">Application.helloworld</option><option value="Application.random">Application.random</option></select>                    <input class="button" type="submit" value="OK" />
+                    <input class="button" type="button" onclick="window.location = 'index.php?RELOAD_FUNCTIONS=1'" value="重新读取函数列表"/>
+                    </form>
+                </div>
+                <div id="links"><a href="index.php?f=Application.random" onclick="choseFunction('Application.random');return false;">Previous</a> <a href="index.php?f=Application.helloworld" onclick="choseFunction('Application.helloworld');return false;">Next</a>
+</div>
+        </div>
+        <div id="content">
+                <div id="inputData">
+                    <span class="intense">函数对应参数 <em>Application.add</em></span>
+                    <div><form name="testFunction" id="testFunction" action="index.php" method="post" enctype="multipart/form-data">
+                    <table id="mainTable"><tr><td>Name</td><td>Value</td><td>Type</td><td>Set</td><td>Null</td></tr><tr valign="top"><td class="label">PersonsArray</td>
+<td><span id="params[0][value]"><table id="mainTable"><tr><td>Name</td><td>Value</td><td>Type</td><td>Set</td><td>Null</td></tr><tr valign="top"><td class="label">Person<br /><a href="index.php?multiply=params[0][members][0]" onclick="multiplyParameter('params[0][members][0]', false);return false;">增加</a></td>
+<td><span id="params[0][members][0][value]"><table id="mainTable"><tr><td>Name</td><td>Value</td><td>Type</td><td>Set</td><td>Null</td></tr><tr valign="top"><td class="label">Name</td>
+<td><input type="text" id="params[0][members][0][members][0][value]" name="params[0][members][0][members][0][value]" value="" /></td>
+<td>String, <span style="color: red">必填</span></td>
+<td><input name = "params[0][members][0][members][0][enabled]" type="checkbox" onclick="enableField('params[0][members][0][members][0]')" checked="checked"/></td><td><input name = "params[0][members][0][members][0][null]" id = "params[0][members][0][members][0][null]" type="checkbox" onclick="nullField('params[0][members][0][members][0]')""></td>
+<td style="vertical-align: middle"><span style="color: #8B0000"></span></td>
+<td class="description"></td></tr><tr valign="top"><td class="label">Age</td>
+<td><input type="text" id="params[0][members][0][members][1][value]" name="params[0][members][0][members][1][value]" value=""  class="disabled"/><div class="error" id="params[0][members][0][members][1][blank]" style="display: none;">Field cannot be left blank.</div><div class="error" id="params[0][members][0][members][1][int]" style="display: none;">Field should be integer.</div></td>
+<td>Integer, <span style="color: #008B00">选填</span></td>
+<td><input name = "params[0][members][0][members][1][enabled]" type="checkbox" onclick="enableField('params[0][members][0][members][1]')"/></td><td><input name = "params[0][members][0][members][1][null]" id = "params[0][members][0][members][1][null]" type="checkbox" onclick="nullField('params[0][members][0][members][1]')" disabled="disabled""></td>
+<td style="vertical-align: middle"><span style="color: #8B0000"></span></td>
+<td class="description"></td></tr></table></span></td><td>Structure, <span style="color: red">必填</span></td>
+<td><input name = "params[0][members][0][enabled]" type="checkbox" onclick="enableField('params[0][members][0]')" checked="checked"/></td><td><input name = "params[0][members][0][null]" id = "params[0][members][0][null]" type="checkbox" onclick="nullField('params[0][members][0]')""></td>
+<td style="vertical-align: middle"><span style="color: #8B0000"></span></td>
+<td class="description"></td></tr></table></span></td><td>Array, <span style="color: red">必填</span></td>
+<td><input name = "params[0][enabled]" type="checkbox" onclick="enableField('params[0]')" checked="checked"/></td><td><input name = "params[0][null]" id = "params[0][null]" type="checkbox" onclick="nullField('params[0]')""></td>
+<td style="vertical-align: middle"><span style="color: #8B0000"></span></td>
+<td class="description"></td></tr></table>                    <div style="display:none;" id="customPacket">
+                        <textarea name="customPacket" id="customPacketText" rows="10" cols="10"></textarea>
+                    </div>
+                    <span style="font-size: 0.6em;"><br /></span>
+                    <span style="font-weight: bold;">协议类型:</span>
+                    <select name="protocol" id="protocolSelect" onchange="chooseProtocol()">
+                        <option  value="xmlrpc">XML-RPC</option>
+                        <option selected="selected" value="jsonrpc">JSON-RPC</option>
+                    </select> <br />
+                                        <input type="checkbox" name="DEBUG" value="1" id="DEBUG"/> <label for="DEBUG">Debug</label>
+                                        <a href="javascript:;" onclick="toggleDiv();">自定义包</a><br/>
+                    <input class="button" type="button" onclick="getResponse();" value="测试" style="margin-top: 8px;" />
+                    </form></div>
+                </div>
+                <div id="helpers">
+                提示: unix_timestamp: 1459340080<br/>提示: datetime: 2016-03-30 20:14:40<br/>提示: dateTime.iso8601: 20160330T20:14:40<br/>                </div>
+                <div id="resultData">
+                                </div>
+        </div>
+    </body>
+</html>
+
