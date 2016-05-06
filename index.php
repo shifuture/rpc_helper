@@ -196,7 +196,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['params'])) {
         <title><?php echo esc(NAME); ?></title>
         <link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
         <link href="css/highlight.css" rel="stylesheet" type="text/css" />
-        <script src="//cdn.bootcss.com/jquery/1.2.6/jquery.min.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/jquery-datetimepicker/2.5.1/jquery.datetimepicker.min.css"/ >
+        <script src="//cdn.bootcss.com/jquery/2.2.0/jquery.min.js" type="text/javascript"></script>
+        <script src="js/jquery.datetimepicker.full.js" type="text/javascript"></script>
         <script src="js/jquery.ajax_upload.0.3.js" type="text/javascript"></script>
         <script src="js/functions.js" type="text/javascript"></script>
     </head>

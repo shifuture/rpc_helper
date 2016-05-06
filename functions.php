@@ -215,6 +215,9 @@ function displayParams($p, $n = 'params', $multiply = false, $depth = 0) {
                     $paramValue = isset($val['value']) ? htmlentities($val['value']) : "";
                 }
                 $str .= '<input type="text" id="' . $toChildrenValue . '" name="' . $toChildrenValue . '" value="' . $paramValue . '" ' . $disabledOptions .'/>';
+                if ( $val['type'] == 'datetime' ) {
+                    $str .= "<script>$('#".str_replace(array('[', ']'), array('\\\\[', '\\\\]'), $toChildrenValue)."').datetimepicker({lang:'zh', format:'Y-m-d H:i:s'});</script>";
+                }
             }
             // add error messages labels for integer blank fields
             if($val['type'] == 'int') {

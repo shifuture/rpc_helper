@@ -4,7 +4,8 @@ Application.add[
     PersonsArray:{
         Person:(
             Name:string,
-            Age:int:true
+            Age:int:true,
+            Birthday:datetime
         )
     }
 ];
