@@ -73,16 +73,8 @@ function chooseFunction(f)
  */
 function chooseServer()
 {
-    showLoad();
     servers = document.getElementById('serverSelect');
-    query = 'index.php?server=' + escape(servers.options[servers.selectedIndex].value);
-    $.get(query, null,
-        function() {
-            document.getElementById('resultData').innerHTML = '';
-            hideLoad();
-            window.location = 'index.php?RELOAD_FUNCTIONS=1';
-        }
-    );
+    window.location = 'index.php?RELOAD_FUNCTIONS=1&server='+escape(servers.options[servers.selectedIndex].value);
 }
 
 /**
