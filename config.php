@@ -17,7 +17,11 @@ define('TIMEZONE', 'Asia/Shanghai');
 // The methods signatures file
 // Can be absolute or relative to the path of this config file.
 // example: methods.signatures.txt
-define('FUNCTIONS', 'methods.txt');
+//define('FUNCTIONS', 'methods.txt');
+$FUNCTIONS = array(
+    'xml' => 'methods.xml.txt',
+    'json' => 'methods.json.txt',
+);
 
 // The default rpc procotol ('xmlrpc' or 'jsonrpc')
 define('DEFAULT_PROTOCOL', 'jsonrpc');

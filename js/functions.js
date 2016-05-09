@@ -80,6 +80,7 @@ function chooseServer()
         function() {
             document.getElementById('resultData').innerHTML = '';
             hideLoad();
+            window.location = 'index.php?RELOAD_FUNCTIONS=1';
         }
     );
 }

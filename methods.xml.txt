@@ -1,4 +1,4 @@
-Application.helloworld[];
+Application.helloworldXml[];
 Application.random [Min:int,Max:int];
 Application.add[
     PersonsArray:{

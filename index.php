@@ -54,7 +54,16 @@ if (!isset($_SESSION['protocol'])) {
 /* Functions setup */
 
 // Load function names
-if (!isset($_SESSION['functions'])) {
+if (!isset($FUNCTIONS) || !array_key_exists($_SESSION['selectedServer'], $FUNCTIONS)) {
+    die('FUNCTIONS file not defined in config file!');
+} else {
+    $functions = getAbsolutePath($FUNCTIONS[$_SESSION['selectedServer']], CONFIG_FILE_DIR);
+    if (!file_exists($functions)) {
+        die('Cannot read the methods signatures file ' . $functions);
+    }
+}
+
+if (!isset($_SESSION['functions'])||isset($_GET['server'])) {
     $str = file_get_contents($functions);
     $_SESSION['functions'] = getFunctionNames($str);
 }

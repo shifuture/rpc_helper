@@ -100,8 +100,16 @@ class Application {
 		}
 	}
 
-    public function helloworld() {
-        return "helloworld";
+    public function helloworldXml() {
+        return "helloworld, Xml";
+    }
+
+    public function helloworldJson() {
+        return "helloworld, Json";
+    }
+
+    public function echoDate($startDate, $endDate) {
+        return "StartDate: $startDate - EndDate: $endDate";
     }
 
     public function random($min, $max) {

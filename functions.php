@@ -39,7 +39,7 @@ function init()
  */
 function loadConfig()
 {
-    global $functions, $typesCast, $types, $servers;
+    global $typesCast, $types, $servers, $FUNCTIONS;
 
     define('CONFIG_FILE_DIR', dirname(__FILE__));
 
@@ -50,16 +50,6 @@ function loadConfig()
         require_once $defaultConfigFile;
     } else {
         die('Config file ' . $defaultConfigFile . ' does not exist!');
-    }
-
-    if (!defined('FUNCTIONS')) {
-        die('FUNCTIONS file not defined in config file!');
-    } else {
-        $functions = getAbsolutePath(FUNCTIONS, CONFIG_FILE_DIR);
-
-        if (!file_exists($functions)) {
-            die('Cannot read the methods signatures file ' . $functions);
-        }
     }
 
     if (!defined('UPLOAD_DIR')) {
