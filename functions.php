@@ -345,6 +345,9 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     $tmpfile = UPLOAD_DIR . '/' . uniqid('message_');
 
     // write the message to temp file
+    if (ENCRYPT) {
+        $message = rsaEncode($message);
+    }
     file_put_contents($tmpfile, $message);
 
     $fh = fopen($tmpfile, 'r');
@@ -403,10 +406,13 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $headers = substr($response, 0, $n);
         $data = substr($response, $n + 4);
     }
+    if (ENCRYPT) {
+        $data = rsaDecode($data);
+    }
 
     // get content type
     preg_match('/Content-Type:.*/', $headers, $matches);
-    $contentType = $matches[0];
+    $contentType = isset($matches[0])?$matches[0]:"";
 
     if ($_SESSION['DEBUG']) {
         echo '---GOT---' . "\n";
@@ -794,7 +800,7 @@ function decorator($var, $pad = 0)
                             break;
                         // string
                         case is_string($value):
-                            $processedValue = "'" . utf8_decode($value) . "'";
+                            $processedValue = "'" . $value . "'";
                         break;
                     }
                     $suffix = (++$count == $end) ? "" : ","; // the last comma
@@ -1347,9 +1353,10 @@ function jsonrpc_request($functionName, $params)
     global $servers;
     $_SESSION['id'] = isset($_SESSION['id'])?intval($_SESSION['id'])+1:1; 
     $request = array(
+        'id' => $_SESSION['id'],
+        'jsonrpc'=> "2.0",
         'method' => $functionName,
         'params' => $params,
-        'id' => $_SESSION['id']
     );
     $request = json_encode($request);
     return $request;
@@ -1390,6 +1397,51 @@ function jsonrpcDecode($methodResponse)
 function xmlrpcDecode($methodResponse)
 {
     return xmlrpc_decode($methodResponse, 'utf-8');
+}
+
+/**
+ * rsa encrypt
+ */
+function rsaEncode($str) {
+    $b64Str = base64_encode($str);
+    $pos = 0;
+    $dstStr = '';
+    while( $pos < strlen($b64Str)) {
+        $tmpStr = '';
+        if ( $pos + 117 > strlen($b64Str) ) {
+            $tmpStr = substr($b64Str, $pos, strlen($b64Str)-$pos);
+            $pos = strlen($b64Str);
+        } else {
+            $tmpStr = substr($b64Str, $pos, 117);
+            $pos += 117;
+        }
+        openssl_public_encrypt($tmpStr, $encStr, openssl_get_publickey(RSA_PUBLIC_KEY));
+        $dstStr .= base64_encode($encStr);
+    }
+    return $dstStr;
+}
+
+/**
+ * rsa decrypt
+ */
+function rsaDecode($str) {
+    $str = str_replace("\n", "", $str);
+    $pos = 0;
+    $dstStr = '';
+    while( $pos < strlen($str)) {
+        $tmpStr = '';
+        if ( $pos + 172 > strlen($str) ) {
+            $tmpStr = substr($str, $pos, strlen($str)-$pos);
+            $pos = strlen($str);
+        } else {
+            $tmpStr = substr($str, $pos, 172);
+            $pos += 172;
+        }
+        openssl_private_decrypt(base64_decode($tmpStr), $decStr, openssl_get_privatekey(RSA_PRIVATE_KEY));
+        $dstStr .= $decStr;
+    }
+    $dstStr = base64_decode($dstStr);
+    return $dstStr;
 }
 
 /*EOF*/

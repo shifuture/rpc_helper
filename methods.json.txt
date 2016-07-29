@@ -1,5 +1,6 @@
 Application.helloworldJson[];
 Application.random [Min:int,Max:int];
+Application.help[name:str];
 Application.echoDate [
     startDate:datetime,
     endDate:datetime

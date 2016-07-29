@@ -8,6 +8,7 @@
 $servers = array(
     'xml' => 'http://vmws/examples/xml.php',
     'json' => 'http://vmws/examples/json.php',
+    'rsa' => 'http://192.168.200.1:8080/index',
 );
 
 // The default timezone used by all date/time functions
@@ -21,7 +22,32 @@ define('TIMEZONE', 'Asia/Shanghai');
 $FUNCTIONS = array(
     'xml' => 'methods.xml.txt',
     'json' => 'methods.json.txt',
+    'rsa' => 'methods.rsa.txt',
 );
+
+define('ENCRYPT', false);
+define('RSA_PRIVATE_KEY', "-----BEGIN RSA PRIVATE KEY-----
+MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAL1chAk2ewrqjrC1
+oYKtrBjESbm40UqwqqtoIwTh1V4qg1Nz092PJDHRERsTSHE/jrlmBFn4nZOXs8g7
+rbwDZ1lbQZ4R2Lnm5tsM/AxCN2PWkOG9YloSlxUzYT48lMB0U/x6gF+n1EX6KCmo
+dkuY9Bq12+q4k1ZSZS6Nh4UmM+Q5AgMBAAECgYEAo3sv8tQ6Ph5qulzU54EQxwEP
+tWu+JQGJFxp8wUZHc1i4sF+bVfiygt/AKOPo8vywN5e/wf1F7ZpW+FOtllhJ6/hJ
+mXbAbnF6rqGR3xri3pQkU9uM6YmawNuihdvlOot6DVFb3dfh3Y0Y0Iv7Tt9wz5Ic
+iK7/oyEPegIex9eW4UECQQD4i6IJ2aIQNMAn+ydBbVlbY2DoPsjfTpCwi/t+w7jM
+vrT0XXYQUgk0dO0+UOqeYp609ON13X4HyWE5HvHD9fgtAkEAwwp1k96QrBG3u6WM
+rht+n0nq45PvNZ3boBUor+cwcealRpHlCD6B1wcPSsOnQpCMOXWFf4ThI2n/9iGM
+mrI3vQJAQ4Jh4/0KKQ669uEgG4RhFhKbOtn647TKVjnfeOIeqvZN3mYYcHxn5aiw
+3BFMePLemtY9hkFAP0syrjo6fvirjQJBAKM5V5i+RBicY0T4kLkMbXVk6Nw365LV
+Xv2jd39uXQ6VVW+vnRq/JO4NDHEnOAzu50sW3PgQ/lEi3oDfJso3p4kCQQChbc5p
+DhxZEgFRouBMEOyBu6FfV0mv5UbQEP8xnQToAAQU0a9xjdTV+3YWYRLa9aEzGcPm
+SGK6byq+I2QKLFb7
+-----END RSA PRIVATE KEY-----");
+define('RSA_PUBLIC_KEY', "-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9XIQJNnsK6o6wtaGCrawYxEm5
+uNFKsKqraCME4dVeKoNTc9PdjyQx0REbE0hxP465ZgRZ+J2Tl7PIO628A2dZW0Ge
+Edi55ubbDPwMQjdj1pDhvWJaEpcVM2E+PJTAdFP8eoBfp9RF+igpqHZLmPQatdvq
+uJNWUmUujYeFJjPkOQIDAQAB
+-----END PUBLIC KEY-----");
 
 // The default rpc procotol ('xmlrpc' or 'jsonrpc')
 define('DEFAULT_PROTOCOL', 'jsonrpc');

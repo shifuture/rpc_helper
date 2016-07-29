@@ -197,6 +197,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['params'])) {
     $resultData = ob_get_contents();
     ob_end_clean();
 }
+/*
+$mydata = '{"jsonrpc":"2.0","id":"1164602116","result":{"name":"queyimeng","age":36}}';
+echo rsaDecode("Nqiz5beNwkB/2DD03V4fcGl7fPW537PRPTGSL/enD0NfmB4cK+u4TgFJYT6X2bx8ejA45AnPROQ7" .
+               "D8ydOzSzM9dGxxery0zloCBDyyKIWPUFhbKEOKrRqcpLk1y4yByHABz8Jh23RzPpbFJl9nLrkLvc" .
+               "QUXlMZN3CLBF9z9IrLM=");
+exit;
+ */
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
