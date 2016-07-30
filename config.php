@@ -8,7 +8,7 @@
 $servers = array(
     'xml' => 'http://vmws/examples/xml.php',
     'json' => 'http://vmws/examples/json.php',
-    'rsa' => 'http://192.168.200.1:8080/index',
+    #'rsa' => 'http://192.168.200.1:8080/index',
 );
 
 // The default timezone used by all date/time functions
@@ -22,7 +22,7 @@ define('TIMEZONE', 'Asia/Shanghai');
 $FUNCTIONS = array(
     'xml' => 'methods.xml.txt',
     'json' => 'methods.json.txt',
-    'rsa' => 'methods.rsa.txt',
+    #'rsa' => 'methods.rsa.txt',
 );
 
 define('ENCRYPT', false);
