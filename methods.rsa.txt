@@ -1,2 +1,3 @@
-UserService.getUserInfo[name:str];
+UserService.getUserInfo[user:(name:str, age:int:true, description:str:true)];
 BusinessService.getTargetInfo[name:str];
+detail.FutureBusinessService.getTargetInfo[name:str];

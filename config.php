@@ -6,9 +6,9 @@
 // an array of key => value pairs representing the testing servers:
 // $servers = array(ServerName => URL);
 $servers = array(
-    'xml' => 'http://vmws/examples/xml.php',
-    'json' => 'http://vmws/examples/json.php',
-    #'rsa' => 'http://192.168.200.1:8080/index',
+    #'xml' => 'http://vmws/examples/xml.php',
+    #'json' => 'http://vmws/examples/json.php',
+    'rsa' => 'http://192.168.200.1:8080/index',
 );
 
 // The default timezone used by all date/time functions
@@ -20,12 +20,11 @@ define('TIMEZONE', 'Asia/Shanghai');
 // example: methods.signatures.txt
 //define('FUNCTIONS', 'methods.txt');
 $FUNCTIONS = array(
-    'xml' => 'methods.xml.txt',
-    'json' => 'methods.json.txt',
-    #'rsa' => 'methods.rsa.txt',
+    #'xml' => 'methods.xml.txt',
+    #'json' => 'methods.json.txt',
+    'rsa' => 'methods.rsa.txt',
 );
 
-define('ENCRYPT', false);
 define('RSA_PRIVATE_KEY', "-----BEGIN RSA PRIVATE KEY-----
 MIICeAIBADANBgkqhkiG9w0BAQEFAASCAmIwggJeAgEAAoGBAL1chAk2ewrqjrC1
 oYKtrBjESbm40UqwqqtoIwTh1V4qg1Nz092PJDHRERsTSHE/jrlmBFn4nZOXs8g7
@@ -57,6 +56,8 @@ define('TAB_WIDTH', 4);
 
 // Debug of the client
 define('DEBUG', false);
+// Debug of the client
+define('RSA', false);
 // Allow debug of the client on test page
 define('DEBUG_ALLOW', true);
 // Some name to identify what is in test

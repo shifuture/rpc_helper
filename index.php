@@ -20,6 +20,7 @@ if (isset($_REQUEST['RELOAD_FUNCTIONS'])) {
     unset($_SESSION['functions']);
     unset($_SESSION['selectedFunction']);
     unset($_SESSION['functionParams']);
+    unset($_SESSION['appParams']);
 }
 
 // Set server URL
@@ -70,6 +71,7 @@ if (!isset($_SESSION['functions'])||isset($_GET['server'])) {
 // If a specific function was requested we update selectedFunction and load its parameters
 if (isset($_GET['f']) && in_array($_GET['f'], $_SESSION['functions'])) {
     $_SESSION['selectedFunction'] = $_GET['f'];
+    $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
     $_SESSION['functionParams'] = parseFunction(file_get_contents($functions), $_SESSION['selectedFunction']);
     if ($_SESSION['functionParams'] === false) {
         die('Signature syntax error: in "' . $functions . '" at function ' . $_SESSION['selectedFunction']);
@@ -95,6 +97,7 @@ if (!isset($_SESSION['selectedFunction'])) {
 
 // Load selectedFunction parameters if not already set
 if(!isset($_SESSION['functionParams'])) {
+    $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
     $_SESSION['functionParams'] = parseFunction(file_get_contents($functions), $_SESSION['selectedFunction']);
     if($_SESSION['functionParams'] === false) {
         die('Signature syntax error: in "' . $functions . '" at function ' . $_SESSION['selectedFunction']);
@@ -109,6 +112,14 @@ if (isset($_POST['DEBUG'])) {
     $_SESSION['DEBUG'] = false;
 }
 
+// RSA setup
+if (isset($_POST['RSA'])) {
+    $_SESSION['RSA'] = true;
+    unset($_POST['RSA']);
+} else {
+    $_SESSION['RSA'] = false;
+}
+
 // If we have a file upload we upload the file, move it into upload dir, update the functionParams
 if (isset($_FILES) && count($_FILES)) {
     foreach ($_FILES as $key => $value) {
@@ -121,6 +132,7 @@ if (isset($_FILES) && count($_FILES)) {
 
 /* Update the values of the already completed input values */
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['params'])) {
+    $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
     $_SESSION['functionParams'] = updateVals($_SESSION['functionParams'], $_POST['params']);
 }
 

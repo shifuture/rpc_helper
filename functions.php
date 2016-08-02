@@ -139,6 +139,26 @@ if (!function_exists('array_combine'))
 }
 
 /**
+ * Returns HTML string with Appkey & AppSecret fields according to params $p
+ *
+ * @param string  $p   array of parameters
+ * @return string HTML string
+ */
+function displayAppKey(&$p) {
+    $str = "";
+    $str .= "<table>";
+    if( empty($p) ) {
+        $str .= "<tr><td>AppKey:</td> <td><input type=\"text\" name=\"AppKey\"></td></tr>";
+        $str .= "<tr><td>AppSecret:</td> <td><input type=\"text\" name=\"AppSecret\"></td></tr>";
+    } else {
+        $str .= "<tr><td>AppKey:</td> <td><input type=\"text\" value=\"{$p['AppKey']}\" name=\"AppKey\"></td></tr>";
+        $str .= "<tr><td>AppSecret:</td> <td><input type=\"text\" value=\"{$p['AppSecret']}\" name=\"AppSecret\"></td></tr>";
+    }
+    $str .= "</table>";
+    return $str;
+}
+
+/**
  * Returns a HTML string with the input fields accoding to array of params $p.
  * This function is called recursively.
  *
@@ -288,7 +308,12 @@ function showResult()
         file_put_contents(dirname(__FILE__) . '/upload/' . $filename, $content);
     }
     
-    displayResponse($_SESSION['URL'], $response);
+    if(isset($_SESSION['appParams'])) {
+        $appKey = isset($_SESSION['appParams']['AppKey'])?$_SESSION['appParams']['AppKey']:"";
+        $appSecret = isset($_SESSION['appParams']['AppSecret'])?$_SESSION['appParams']['AppSecret']:"";
+        $serverURL = $_SESSION['URL']."?AppKey={$appKey}&AppSecret={$appSecret}";
+    }
+    displayResponse($serverURL, $response);
 }
 
 /**
@@ -345,13 +370,23 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     $tmpfile = UPLOAD_DIR . '/' . uniqid('message_');
 
     // write the message to temp file
-    if (ENCRYPT) {
+    if ($_SESSION['RSA']) {
         $message = rsaEncode($message);
     }
     file_put_contents($tmpfile, $message);
 
     $fh = fopen($tmpfile, 'r');
 
+    // initial appkey & appsecret
+    if(isset($_REQUEST['AppKey'])) {
+        $_SESSION['appParams']['AppKey']=$_REQUEST['AppKey'];
+        $_SESSION['appParams']['AppSecret']=$_REQUEST['AppSecret'];
+    }
+    if(isset($_SESSION['appParams'])) {
+        $appKey = isset($_SESSION['appParams']['AppKey'])?$_SESSION['appParams']['AppKey']:"";
+        $appSecret = isset($_SESSION['appParams']['AppSecret'])?$_SESSION['appParams']['AppSecret']:"";
+        $serverURL .= "?AppKey={$appKey}&AppSecret={$appSecret}";
+    }
     // initialize the curl session
     $ch = curl_init($serverURL);
     // set options
@@ -406,7 +441,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $headers = substr($response, 0, $n);
         $data = substr($response, $n + 4);
     }
-    if (ENCRYPT) {
+    if ( $_SESSION['RSA']) {
         $data = rsaDecode($data);
     }
 
@@ -1209,15 +1244,17 @@ function showInputForm()
 <span class="intense">函数对应参数 <em><?php echo $_SESSION['selectedFunction']; ?></em></span>
                     <div><form name="testFunction" id="testFunction" action="index.php" method="post" enctype="multipart/form-data">
                     <?php echo displayParams($_SESSION['functionParams']);?>
+                    <?php echo displayAppKey($_SESSION['appParams']);?>
                     <div <?php echo (empty($_POST['customPacket']))?'style="display:none;"':''; ?> id="customPacket">
                         <textarea name="customPacket" id="customPacketText" rows="10" cols="10"><?php echo (!empty($_POST['customPacket']))?$_POST['customPacket']:''; ?></textarea>
                     </div>
-                    <span style="font-size: 0.6em;"><br /></span>
+                    <span style="font-size: 0.6em;"><br/></span>
                     <span style="font-weight: bold;">协议类型:</span>
                     <select name="protocol" id="protocolSelect" onchange="chooseProtocol()">
                         <option <?php echo ($_SESSION['protocol'] == 'xmlrpc') ? 'selected="selected"' : '' ?> value="xmlrpc">XML-RPC</option>
                         <option <?php echo ($_SESSION['protocol'] == 'jsonrpc') ? 'selected="selected"' : '' ?> value="jsonrpc">JSON-RPC</option>
                     </select> <br />
+                    <input type="checkbox" name="RSA" value="1" id="RSA"<?php echo ($_SESSION['RSA'])?" checked=\"checked\"":"";?>/> <label for="RSA">RSA</label>
                     <?php if (DEBUG_ALLOW == 1) { ?>
                     <input type="checkbox" name="DEBUG" value="1" id="DEBUG"<?php echo ($_SESSION['DEBUG'])?" checked=\"checked\"":"";?>/> <label for="DEBUG">Debug</label>
                     <?php }// end if ?>
