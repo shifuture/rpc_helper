@@ -1463,6 +1463,7 @@ function rsaEncode($str) {
  */
 function rsaDecode($str) {
     $str = str_replace("\n", "", $str);
+    $str = str_replace("\r", "", $str);
     $pos = 0;
     $dstStr = '';
     while( $pos < strlen($str)) {
