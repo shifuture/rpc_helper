@@ -74,7 +74,7 @@ function chooseFunction(f)
 function chooseServer()
 {
     servers = document.getElementById('serverSelect');
-    window.location = 'index.php?RELOAD_FUNCTIONS=1&server='+escape(servers.options[servers.selectedIndex].value);
+    window.location = 'index.php?RELOAD_FUNCTIONS=1&server='+encodeURIComponent(servers.options[servers.selectedIndex].value);
 }
 
 /**

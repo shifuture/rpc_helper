@@ -13,6 +13,8 @@ if (isset($_REQUEST['RESET']))
     cleanUploadDir();
     session_destroy();
     session_start();
+    $_POST['RSA'] = 1;
+    $_POST['DEBUG'] = 1;
 }
 
 // If reload functions is requested we unset $_SESSION functions variables
@@ -21,6 +23,8 @@ if (isset($_REQUEST['RELOAD_FUNCTIONS'])) {
     unset($_SESSION['selectedFunction']);
     unset($_SESSION['functionParams']);
     unset($_SESSION['appParams']);
+    $_POST['RSA'] = 1;
+    $_POST['DEBUG'] = 1;
 }
 
 // Set server URL
@@ -73,6 +77,8 @@ if (isset($_GET['f']) && in_array($_GET['f'], $_SESSION['functions'])) {
     $_SESSION['selectedFunction'] = $_GET['f'];
     $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
     $_SESSION['functionParams'] = parseFunction(file_get_contents($functions), $_SESSION['selectedFunction']);
+    $_POST['RSA'] = 1;
+    $_POST['DEBUG'] = 1;
     if ($_SESSION['functionParams'] === false) {
         die('Signature syntax error: in "' . $functions . '" at function ' . $_SESSION['selectedFunction']);
     }
