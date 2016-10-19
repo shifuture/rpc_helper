@@ -1265,6 +1265,17 @@ function showInputForm()
 }
 
 /**
+ * Given helper info.
+ * Help valid data info
+ */
+function createHelper() {
+    echo "<input class=\"button\" type=\"button\" onclick=\"updateHelper();\" value=\"更新提示\" style=\"margin-top: 8px;\" /><br/>";
+    echo "提示: unix_timestamp: " . time() . "000<br/>";
+    echo "提示: datetime: " . date("Y-m-d H:i:s") . "<br/>";
+    echo "提示: dateTime.iso8601: " . date("Ymd\TH:i:s") . "<br/>";
+}
+
+/**
  * Outputs the functions
  *
  * @return void Outputs HTML code

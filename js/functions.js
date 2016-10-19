@@ -139,6 +139,17 @@ function getResponse()
     }
 }
 
+function updateHelper() 
+{
+    showLoad();
+    query = 'index.php?HELPER=1';
+    $('#helpers').load(query,
+        function() {
+	    hideLoad();
+        }
+    );
+}
+
 /**
  * Parses recursively the parameters and validates them.
  * It also reveals errors in case of invalid values.

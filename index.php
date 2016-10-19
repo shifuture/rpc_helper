@@ -7,6 +7,13 @@ require_once 'functions.php';
 
 init();
 
+// If get helper is requested
+if (isset($_REQUEST['HELPER']))
+{
+    createHelper();
+    die();
+}
+
 // If reset tester is requested we destroy the session and clean up the upload dir
 if (isset($_REQUEST['RESET']))
 {
@@ -14,7 +21,6 @@ if (isset($_REQUEST['RESET']))
     session_destroy();
     session_start();
     $_POST['RSA'] = 1;
-    $_POST['DEBUG'] = 1;
 }
 
 // If reload functions is requested we unset $_SESSION functions variables
@@ -24,7 +30,6 @@ if (isset($_REQUEST['RELOAD_FUNCTIONS'])) {
     unset($_SESSION['functionParams']);
     unset($_SESSION['appParams']);
     $_POST['RSA'] = 1;
-    $_POST['DEBUG'] = 1;
 }
 
 // Set server URL
@@ -78,7 +83,6 @@ if (isset($_GET['f']) && in_array($_GET['f'], $_SESSION['functions'])) {
     $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
     $_SESSION['functionParams'] = parseFunction(file_get_contents($functions), $_SESSION['selectedFunction']);
     $_POST['RSA'] = 1;
-    $_POST['DEBUG'] = 1;
     if ($_SESSION['functionParams'] === false) {
         die('Signature syntax error: in "' . $functions . '" at function ' . $_SESSION['selectedFunction']);
     }
@@ -283,9 +287,7 @@ exit;
                 </div>
                 <div id="helpers">
                 <?php
-                echo "提示: unix_timestamp: " . time() . "<br/>";
-                echo "提示: datetime: " . date("Y-m-d H:i:s") . "<br/>";
-                echo "提示: dateTime.iso8601: " . date("Ymd\TH:i:s") . "<br/>";
+		 createHelper();
                 ?>
                 </div>
                 <div id="resultData">
