@@ -51,6 +51,9 @@ uJNWUmUujYeFJjPkOQIDAQAB
 // The default rpc procotol ('xmlrpc' or 'jsonrpc')
 define('DEFAULT_PROTOCOL', 'jsonrpc');
 
+// The default client type
+define('CLIENT_TYPE', 'WSTESTER');
+
 // Used by the decorator of the result data
 define('TAB_WIDTH', 4);
 

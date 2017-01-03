@@ -391,6 +391,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     $ch = curl_init($serverURL);
     // set options
     $header = array(
+        'X-Client: ' . CLIENT_TYPE,
         'Content-Type: ' . $contentType[$protocol],
         'Content-Length: ' . strlen($message),
         'Expect:'
