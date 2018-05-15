@@ -39,7 +39,7 @@ function init()
  */
 function loadConfig()
 {
-    global $typesCast, $types, $servers, $FUNCTIONS;
+    global $typesCast, $types;
 
     define('CONFIG_FILE_DIR', dirname(__FILE__));
 
@@ -58,10 +58,6 @@ function loadConfig()
         if (!is_dir(UPLOAD_DIR) || !is_writable(UPLOAD_DIR)) {
             die('Upload dir ' . UPLOAD_DIR . ' does not exist or is not writable!');
         }
-    }
-
-    if (!isset($servers) || empty($servers)) {
-        die('No servers defined in config file!');
     }
 }
 
@@ -145,17 +141,8 @@ if (!function_exists('array_combine'))
  * @return string HTML string
  */
 function displayAppKey(&$p) {
-    $str = "";
-    $str .= "<table>";
-    if( empty($p) ) {
-        $str .= "<tr><td>AppKey:</td> <td><input type=\"text\" name=\"AppKey\"></td></tr>";
-        $str .= "<tr><td>AppSecret:</td> <td><input type=\"text\" name=\"AppSecret\"></td></tr>";
-    } else {
-        $str .= "<tr><td>AppKey:</td> <td><input type=\"text\" value=\"{$p['AppKey']}\" name=\"AppKey\"></td></tr>";
-        $str .= "<tr><td>AppSecret:</td> <td><input type=\"text\" value=\"{$p['AppSecret']}\" name=\"AppSecret\"></td></tr>";
-    }
-    $str .= "</table>";
-    return $str;
+    return '<div><span style="font-weight: bold;">X-GSAE-AUTH </span> <input name="customHeader" type="text" value="'
+    .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></div>';
 }
 
 /**
@@ -288,7 +275,7 @@ function displayParams($p, $n = 'params', $multiply = false, $depth = 0) {
  * Makes the request and outputs the HTML response.
  * Uses $_SESSION['functionParams'] to get the function parameters.
  *
- * @return outputs directly the HTML response
+ * @return string outputs directly the HTML response
  */
 function showResult()
 {
@@ -377,16 +364,6 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
 
     $fh = fopen($tmpfile, 'r');
 
-    // initial appkey & appsecret
-    if(isset($_REQUEST['AppKey'])) {
-        $_SESSION['appParams']['AppKey']=$_REQUEST['AppKey'];
-        $_SESSION['appParams']['AppSecret']=$_REQUEST['AppSecret'];
-    }
-    if(isset($_SESSION['appParams'])) {
-        $appKey = isset($_SESSION['appParams']['AppKey'])?$_SESSION['appParams']['AppKey']:"";
-        $appSecret = isset($_SESSION['appParams']['AppSecret'])?$_SESSION['appParams']['AppSecret']:"";
-        $serverURL .= "?AppKey={$appKey}&AppSecret={$appSecret}";
-    }
     // initialize the curl session
     $ch = curl_init($serverURL);
     // set options
@@ -396,6 +373,14 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         'Content-Length: ' . strlen($message),
         'Expect:'
     );
+    // set customHeader
+    if (isset($_REQUEST['customHeader'])) {
+        $_SESSION['customHeader'] = $_REQUEST['customHeader'];
+        $customHeader = $_REQUEST['customHeader'];
+        if ($customHeader != '') {
+            $header[] = 'X-GSAE-AUTH: '.$customHeader;
+        }
+    }
     $options = array(
         CURLOPT_HTTPHEADER => $header,            // set custom headers
         CURLOPT_POST       => true,               // do a POST request
@@ -553,7 +538,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
  *
  * @param string $p Array of parameters to send
  * @param string $protocol rpc protocol
- * @return the final array of formatted parameters ready to be encoded into rpc
+ * @return array the final array of formatted parameters ready to be encoded into rpc
  */
 function makeMessageParams($p, $protocol)
 {
@@ -1464,7 +1449,8 @@ function rsaEncode($str) {
             $tmpStr = substr($b64Str, $pos, 117);
             $pos += 117;
         }
-        openssl_public_encrypt($tmpStr, $encStr, openssl_get_publickey(RSA_PUBLIC_KEY));
+        openssl_public_encrypt($tmpStr, $encStr,
+            openssl_get_publickey('-----BEGIN PUBLIC KEY-----'.PHP_EOL.$_SESSION['pubKey'].PHP_EOL.'-----END PUBLIC KEY-----'));
         $dstStr .= base64_encode($encStr);
     }
     return $dstStr;
@@ -1487,11 +1473,31 @@ function rsaDecode($str) {
             $tmpStr = substr($str, $pos, 172);
             $pos += 172;
         }
-        openssl_private_decrypt(base64_decode($tmpStr), $decStr, openssl_get_privatekey(RSA_PRIVATE_KEY));
+        openssl_private_decrypt(base64_decode($tmpStr), $decStr,
+            openssl_get_privatekey('-----BEGIN PUBLIC KEY-----'.PHP_EOL.$_SESSION['priKey'].PHP_EOL.'-----END PUBLIC KEY-----'));
         $dstStr .= $decStr;
     }
     $dstStr = base64_decode($dstStr);
     return $dstStr;
 }
 
-/*EOF*/
+/**
+ * 从远程配置地址获取
+ *
+ * @param string $configUrl 远程配置地址
+ * @return array
+ */
+function loadRemoteConfig($configUrl) {
+    // 获取数据
+    $res = @file_get_contents($configUrl);
+    $res === false && die('Cannot read config info from: ' . $configUrl);
+    $res = @json_decode($res, true);
+    $res === false && die('Cannot parse config from: ' . $configUrl);
+
+    // 解析数据
+    $servers = $res['server'];
+    if (count($servers) <= 0) {
+        die('远程配置地址中 server数量为0');
+    }
+    return $servers;
+}
