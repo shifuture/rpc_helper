@@ -141,8 +141,11 @@ if (!function_exists('array_combine'))
  * @return string HTML string
  */
 function displayAppKey(&$p) {
-    return '<div><span style="font-weight: bold;">X-GSAE-AUTH </span> <input name="customHeader" type="text" value="'
-    .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></div>';
+    return '<table>'.
+        '<tr><td><b>X-GSAE-AUTH</b></td><td><input style="width:400px" name="customHeader" type="text" value="'
+            .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></td></tr>'.
+        '<tr><td><b>REQ-SN</b></td><td><input style="width:400px" name="reqSn" type="text" value="'.session_id().'-rpcHelper"></td></tr>'.
+    '</table>';
 }
 
 /**
@@ -381,6 +384,12 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
             $header[] = 'X-GSAE-AUTH: '.$customHeader;
         }
     }
+    if (isset($_REQUEST['reqSn'])) {
+        $reqSn = $_REQUEST['reqSn'];
+        if ($reqSn != '') {
+            $header[] = 'REQ-SN: '.$reqSn;
+        }
+    }
     $options = array(
         CURLOPT_HTTPHEADER => $header,            // set custom headers
         CURLOPT_POST       => true,               // do a POST request
@@ -401,7 +410,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $userpwd = HTTP_BASIC_AUTH_USER . ':' .  HTTP_BASIC_AUTH_PASS;
         $options[CURLOPT_USERPWD] = $userpwd;
     }
-
+    
     curl_setopt_array($ch, $options);
 
     // get the response

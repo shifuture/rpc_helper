@@ -30,7 +30,6 @@ if (isset($_REQUEST['RELOAD_FUNCTIONS'])) {
     unset($_SESSION['functionParams']);
     unset($_SESSION['appParams']);
     unset($_SESSION['configArr']);
-    $_POST['RSA'] = 1;
 }
 
 // 从远程地址读取配置
@@ -95,7 +94,6 @@ if (isset($_GET['f']) && in_array($_GET['f'], $_SESSION['functions'])) {
     $_SESSION['selectedFunction'] = $_GET['f'];
     $_SESSION['appParams'] = isset($_SESSION['appParams']) ? $_SESSION['appParams']:array();
     $_SESSION['functionParams'] = parseFunction($functionsStr, $_SESSION['selectedFunction']);
-    $_POST['RSA'] = 1;
     if ($_SESSION['functionParams'] === false) {
         die('Signature syntax error: in "' . $functionsStr . '" at function ' . $_SESSION['selectedFunction']);
     }
@@ -128,19 +126,13 @@ if(!isset($_SESSION['functionParams'])) {
 }
 
 // Debug setup
-if (isset($_POST['DEBUG'])) {
-    $_SESSION['DEBUG'] = true;
-    unset($_POST['DEBUG']);
-} else {
-    $_SESSION['DEBUG'] = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['DEBUG'] = isset($_POST['DEBUG']);
 }
 
 // RSA setup
-if (isset($_POST['RSA'])) {
-    $_SESSION['RSA'] = true;
-    unset($_POST['RSA']);
-} else {
-    $_SESSION['RSA'] = false;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['RSA'] = isset($_POST['RSA']);
 }
 
 // If we have a file upload we upload the file, move it into upload dir, update the functionParams
