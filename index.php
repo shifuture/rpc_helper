@@ -29,17 +29,43 @@ if (isset($_REQUEST['RELOAD_FUNCTIONS'])) {
     unset($_SESSION['selectedFunction']);
     unset($_SESSION['functionParams']);
     unset($_SESSION['appParams']);
+    unset($_SESSION['configArr']);
     $_POST['RSA'] = 1;
 }
 
+// 从远程地址读取配置
+if (isset($_GET['config']) && $_GET['config'] != '') {
+    $configUrl = $_GET['config'];
+    if (isset($_SESSION['configUrl']) && $_SESSION['configUrl'] != $configUrl) {
+        unset($_SESSION['configArr']);
+    }
+} elseif (isset($_SESSION['configUrl'])) {
+    $configUrl = $_SESSION['configUrl'];
+} else {
+    $configUrl = 'http://config.gsae-tech.com/rpc-helper-dev.json';
+}
+$_SESSION['configUrl'] = $configUrl;
+if (isset($_SESSION['configArr'])) {
+    $configArr = $_SESSION['configArr'];
+} else {
+    $configArr = loadRemoteConfig($configUrl);
+    $_SESSION['configArr'] = $configArr;
+}
+
 // Set server URL
-if (isset($_GET['server']) && array_key_exists($_GET['server'], $servers)) {
-    $_SESSION['selectedServer'] = $_GET['server'];
+$selectedServer = 0;
+if (isset($_SESSION['selectedServer']) && isset($configArr[$_SESSION['selectedServer']])) {
+    $selectedServer = $_SESSION['selectedServer'];
 }
-if (!isset($_SESSION['selectedServer'])) {
-    $arrayKeys = array_keys($servers);
-    $_SESSION['selectedServer'] = $arrayKeys[0];
+if (isset($_GET['server']) && isset($configArr[$_GET['server']])) {
+    $selectedServer = $_GET['server'];
 }
+$_SESSION['selectedServer'] = $selectedServer;
+$server = $configArr[$_SESSION['selectedServer']];
+
+// pub key
+$_SESSION['pubKey'] = $server['rsa']['pubKey'];
+$_SESSION['priKey'] = $server['rsa']['priKey'];
 
 // Define and set sessions
 if (defined('LOGIN_METHOD') && !isset($_SESSION['storedSessions'])) {
@@ -50,7 +76,7 @@ if (isset($_GET['session']) && isset($_SESSION['storedSessions'][$_GET['session'
     $_SESSION['selectedServer'] = $_SESSION['storedSessions'][$_GET['session']]['server'];
 }
 
-$_SESSION['URL'] = $servers[$_SESSION['selectedServer']];
+$_SESSION['URL'] = $server['url'];
 
 // Set RPC protocol
 $protocols = array('xmlrpc', 'jsonrpc');
@@ -61,30 +87,17 @@ if (!isset($_SESSION['protocol'])) {
     $_SESSION['protocol'] = DEFAULT_PROTOCOL;
 }
 
-/* Functions setup */
+$functionsStr = implode(PHP_EOL, $server['functions']);
+$_SESSION['functions'] = getFunctionNames($functionsStr);
 
-// Load function names
-if (!isset($FUNCTIONS) || !array_key_exists($_SESSION['selectedServer'], $FUNCTIONS)) {
-    die('FUNCTIONS file not defined in config file!');
-} else {
-    $functions = getAbsolutePath($FUNCTIONS[$_SESSION['selectedServer']], CONFIG_FILE_DIR);
-    if (!file_exists($functions)) {
-        die('Cannot read the methods signatures file ' . $functions);
-    }
-}
-
-if (!isset($_SESSION['functions'])||isset($_GET['server'])) {
-    $str = file_get_contents($functions);
-    $_SESSION['functions'] = getFunctionNames($str);
-}
 // If a specific function was requested we update selectedFunction and load its parameters
 if (isset($_GET['f']) && in_array($_GET['f'], $_SESSION['functions'])) {
     $_SESSION['selectedFunction'] = $_GET['f'];
-    $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
-    $_SESSION['functionParams'] = parseFunction(file_get_contents($functions), $_SESSION['selectedFunction']);
+    $_SESSION['appParams'] = isset($_SESSION['appParams']) ? $_SESSION['appParams']:array();
+    $_SESSION['functionParams'] = parseFunction($functionsStr, $_SESSION['selectedFunction']);
     $_POST['RSA'] = 1;
     if ($_SESSION['functionParams'] === false) {
-        die('Signature syntax error: in "' . $functions . '" at function ' . $_SESSION['selectedFunction']);
+        die('Signature syntax error: in "' . $functionsStr . '" at function ' . $_SESSION['selectedFunction']);
     }
 }
 
@@ -108,9 +121,9 @@ if (!isset($_SESSION['selectedFunction'])) {
 // Load selectedFunction parameters if not already set
 if(!isset($_SESSION['functionParams'])) {
     $_SESSION['appParams'] = isset($_SESSION['appParams'])?$_SESSION['appParams']:array();
-    $_SESSION['functionParams'] = parseFunction(file_get_contents($functions), $_SESSION['selectedFunction']);
+    $_SESSION['functionParams'] = parseFunction($functionsStr, $_SESSION['selectedFunction']);
     if($_SESSION['functionParams'] === false) {
-        die('Signature syntax error: in "' . $functions . '" at function ' . $_SESSION['selectedFunction']);
+        die('Signature syntax error: in "' . $functionsStr . '" at function ' . $_SESSION['selectedFunction']);
     }
 }
 
@@ -252,20 +265,17 @@ exit;
                 </form>
             </div>
             <br/>
-
-                <?php if(count($servers) > 1) { ?>
                 <div id="serversForm">
                     <form method="get" action="index.php">
                     <span>选择服务器:</span>
                     <select name="server" id="serverSelect" onchange="chooseServer();">
-                        <?php foreach($servers as $server => $url) { ?>
-                            <option value="<?php echo $server ?>" <?php if ($_SESSION['selectedServer'] == $server) { echo 'selected="selected" '; }?>><?php echo $server?></option>
+                        <?php foreach($configArr as $k => $v) { ?>
+                            <option value="<?php echo $k ?>" <?php if ($_SESSION['selectedServer'] == $k) { echo 'selected="selected" '; }?>><?php echo $k?>: <?php echo $v['url'] ?></option>
                         <?php } ?>
                     </select>
                     <input class="button" type="submit" value="OK" onclick="" />
                     </form>
                 </div>
-                <?php } ?>
 
                 <span id="sessionsFormContainer">
                     <?php showSessionsForm(); ?>
