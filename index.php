@@ -42,7 +42,7 @@ if (isset($_GET['config']) && $_GET['config'] != '') {
 } elseif (isset($_SESSION['configUrl'])) {
     $configUrl = $_SESSION['configUrl'];
 } else {
-    exit('请填写config参数');
+    $configUrl = 'http://config.gsae-tech.com/rpc-helper-dev.json';
 }
 $_SESSION['configUrl'] = $configUrl;
 if (isset($_SESSION['configArr'])) {
