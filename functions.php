@@ -104,17 +104,21 @@ function esc($str)
  */
 function showList($params, $values, $selected = null)
 {
+    $arr = [];
+    $s = '';
+    foreach ($values as $k => $v) {
+        $v1 = explode('.', $v);
+        if ($s != $v1[0]) {
+            $arr[] = [$v1[0], false, ''];
+            $s = $v1[0];
+        }
+        unset($v1[0]);
+        $arr[] = ['¦− '.implode('.', $v1), true, $v];
+    }
+
     $list = '<select '.$params.'>';
-    foreach($values as $key=>$val)
-    {
-        if ($key === $selected)
-        {
-            $list .= '<option value="'.esc($key).'" selected="selected">'.esc($val).'</option>';
-        }
-        else
-        {
-            $list .= '<option value="'.esc($key).'">'.esc($val).'</option>';
-        }
+    foreach ($arr as $v) {
+        $list .= '<option value="'.esc($v[2]).'" '.($v[2] === $selected ? 'selected' : '').'" '.(! $v[1] ? 'disabled' : '').'>'.esc($v[0]).'</option>';
     }
     $list .= '</select>';
     echo $list;
