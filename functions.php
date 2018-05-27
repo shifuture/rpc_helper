@@ -146,6 +146,8 @@ if (!function_exists('array_combine'))
  */
 function displayAppKey(&$p) {
     return '<table>'.
+    '<tr><td><b>X-GSAE-UA</b></td><td><input style="width:400px" name="xGsaeUa" type="text" value="'
+    .(isset($_SESSION['xGsaeUa']) ? $_SESSION['xGsaeUa'] : 'h5/101').'"></td></tr>'.
         '<tr><td><b>X-GSAE-AUTH</b></td><td><input style="width:400px" name="customHeader" type="text" value="'
             .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></td></tr>'.
         '<tr><td><b>REQ-SN</b></td><td><input style="width:400px" name="reqSn" type="text" value="'.session_id().'-rpcHelper"></td></tr>'.
@@ -301,12 +303,8 @@ function showResult()
     foreach ($response['attachments'] as $filename => $content) {
         file_put_contents(dirname(__FILE__) . '/upload/' . $filename, $content);
     }
-    
-    if(isset($_SESSION['appParams'])) {
-        $appKey = isset($_SESSION['appParams']['AppKey'])?$_SESSION['appParams']['AppKey']:"";
-        $appSecret = isset($_SESSION['appParams']['AppSecret'])?$_SESSION['appParams']['AppSecret']:"";
-        $serverURL = $_SESSION['URL']."?AppKey={$appKey}&AppSecret={$appSecret}";
-    }
+
+    $serverURL = $_SESSION['URL'];
     displayResponse($serverURL, $response);
 }
 
@@ -392,6 +390,14 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $reqSn = $_REQUEST['reqSn'];
         if ($reqSn != '') {
             $header[] = 'REQ-SN: '.$reqSn;
+        }
+    }
+    $_SESSION['xGsaeUa'] = '';
+    if (isset($_REQUEST['xGsaeUa'])) {
+        $_SESSION['xGsaeUa'] = $_REQUEST['xGsaeUa'];
+        $xGsaeUa = $_REQUEST['xGsaeUa'];
+        if ($xGsaeUa != '') {
+            $header[] = 'X-GSAE-AUTH: '.$xGsaeUa;
         }
     }
     $options = array(
@@ -1487,7 +1493,7 @@ function rsaDecode($str) {
             $pos += 172;
         }
         openssl_private_decrypt(base64_decode($tmpStr), $decStr,
-            openssl_get_privatekey('-----BEGIN PUBLIC KEY-----'.PHP_EOL.$_SESSION['priKey'].PHP_EOL.'-----END PUBLIC KEY-----'));
+            openssl_get_privatekey('-----BEGIN PRIVATE KEY-----'.PHP_EOL.$_SESSION['priKey'].PHP_EOL.'-----END PRIVATE KEY-----'));
         $dstStr .= $decStr;
     }
     $dstStr = base64_decode($dstStr);
