@@ -147,7 +147,7 @@ if (!function_exists('array_combine'))
 function displayAppKey(&$p) {
     return '<table>'.
     '<tr><td><b>X-GSAE-UA</b></td><td><input style="width:400px" name="xGsaeUa" type="text" value="'
-    .(isset($_SESSION['xGsaeUa']) ? $_SESSION['xGsaeUa'] : 'h5/101').'"></td></tr>'.
+    .(isset($_SESSION['xGsaeUa']) ? $_SESSION['xGsaeUa'] : '').'"></td></tr>'.
         '<tr><td><b>X-GSAE-AUTH</b></td><td><input style="width:400px" name="customHeader" type="text" value="'
             .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></td></tr>'.
         '<tr><td><b>REQ-SN</b></td><td><input style="width:400px" name="reqSn" type="text" value="'.session_id().'-rpcHelper"></td></tr>'.
@@ -397,7 +397,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $_SESSION['xGsaeUa'] = $_REQUEST['xGsaeUa'];
         $xGsaeUa = $_REQUEST['xGsaeUa'];
         if ($xGsaeUa != '') {
-            $header[] = 'X-GSAE-AUTH: '.$xGsaeUa;
+            $header[] = 'X-GSAE-UA: '.$xGsaeUa;
         }
     }
     $options = array(
@@ -1469,7 +1469,7 @@ function rsaEncode($str) {
             $pos += 117;
         }
         openssl_public_encrypt($tmpStr, $encStr,
-            openssl_get_publickey('-----BEGIN PUBLIC KEY-----'.PHP_EOL.$_SESSION['pubKey'].PHP_EOL.'-----END PUBLIC KEY-----'));
+            openssl_get_publickey("-----BEGIN PUBLIC KEY-----".PHP_EOL.chunk_split($_SESSION['pubKey'])."-----END PUBLIC KEY-----"));
         $dstStr .= base64_encode($encStr);
     }
     return $dstStr;
@@ -1493,7 +1493,7 @@ function rsaDecode($str) {
             $pos += 172;
         }
         openssl_private_decrypt(base64_decode($tmpStr), $decStr,
-            openssl_get_privatekey('-----BEGIN PRIVATE KEY-----'.PHP_EOL.$_SESSION['priKey'].PHP_EOL.'-----END PRIVATE KEY-----'));
+            openssl_get_privatekey("-----BEGIN PRIVATE KEY-----".PHP_EOL.chunk_split($_SESSION['priKey'])."-----END PRIVATE KEY-----"));
         $dstStr .= $decStr;
     }
     $dstStr = base64_decode($dstStr);
