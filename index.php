@@ -48,6 +48,12 @@ if (isset($_SESSION['configArr'])) {
     $configArr = $_SESSION['configArr'];
 } else {
     $configArr = loadRemoteConfig($configUrl);
+    array_multisort(array_column($configArr, 'name'), SORT_ASC, $configArr);
+    foreach ($configArr as $k => $v) {
+        $a = $v['functions'];
+        sort($a);
+        $configArr[$k]['functions'] = $a;
+    }
     $_SESSION['configArr'] = $configArr;
 }
 
@@ -128,11 +134,15 @@ if(!isset($_SESSION['functionParams'])) {
 // Debug setup
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['DEBUG'] = isset($_POST['DEBUG']);
+} else {
+    $_SESSION['DEBUG'] = isset($_SESSION['DEBUG']) && $_SESSION['DEBUG'];
 }
 
 // RSA setup
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['RSA'] = isset($_POST['RSA']);
+} else {
+    $_SESSION['RSA'] = isset($_SESSION['RSA']) && $_SESSION['RSA'];
 }
 
 // If we have a file upload we upload the file, move it into upload dir, update the functionParams
@@ -260,9 +270,20 @@ exit;
                 <div id="serversForm">
                     <form method="get" action="index.php">
                     <span>选择服务器:</span>
+                    <?php
+                    $arr = [];
+                    $s = '';
+                    foreach ($configArr as $k => $v) {
+                        if ($s != $v['name']) {
+                            $arr[] = [$v['name'], false, '', -1];
+                            $s = $v['name'];
+                        }
+                        $arr[] = ['¦− '.$v['url'], true, $v, $k];
+                    }
+                    ?>
                     <select name="server" id="serverSelect" onchange="chooseServer();">
-                        <?php foreach($configArr as $k => $v) { ?>
-                            <option value="<?php echo $k ?>" <?php if ($_SESSION['selectedServer'] == $k) { echo 'selected="selected" '; }?>><?php echo $k?>: <?php echo $v['url'] ?></option>
+                        <?php foreach($arr as $v) { ?>
+                            <option <?php echo $v[1] == false ? 'disabled' : '' ?> value="<?php echo $v[3] ?>" <?php if ($_SESSION['selectedServer'] == $v[3]) { echo 'selected="selected" '; }?>><?php echo $v[0] ?></option>
                         <?php } ?>
                     </select>
                     <input class="button" type="submit" value="OK" onclick="" />
