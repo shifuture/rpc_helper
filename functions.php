@@ -609,11 +609,14 @@ function parseInternalParams($p, $type)
             foreach($p as $paramProperties) {
                 $params[$paramProperties['name']] = parseInternalParams($paramProperties['value'], $paramProperties['type']);
             }
+            if(empty($params)) {
+                $params = new stdClass();
+            }
             $return = $params;
             break;
         case 'int':
             $return = (int)$p;
-        break;
+            break;
         case 'string':
             $return = (string)$p;
             break;
