@@ -20,7 +20,6 @@ if (isset($_REQUEST['RESET']))
     cleanUploadDir();
     session_destroy();
     session_start();
-    $_POST['RSA'] = 1;
 }
 
 // If reload functions is requested we unset $_SESSION functions variables
@@ -41,7 +40,7 @@ if (isset($_GET['config']) && $_GET['config'] != '') {
 } elseif (isset($_SESSION['configUrl'])) {
     $configUrl = $_SESSION['configUrl'];
 } else {
-    $configUrl = 'http://config.gsae-tech.com/rpc-helper-dev.json';
+    $configUrl = 'http://config-server.spring/rpc-helper-dev.json';
 }
 $_SESSION['configUrl'] = $configUrl;
 if (isset($_SESSION['configArr'])) {

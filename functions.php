@@ -146,8 +146,10 @@ if (!function_exists('array_combine'))
  */
 function displayAppKey(&$p) {
     return '<table>'.
-    '<tr><td><b>X-GSAE-UA</b></td><td><input style="width:400px" name="xGsaeUa" type="text" value="'
-    .(isset($_SESSION['xGsaeUa']) ? $_SESSION['xGsaeUa'] : '').'"></td></tr>'.
+        '<tr><td><b>X-GSAE-UA</b></td><td><input style="width:400px" name="xGsaeUa" type="text" value="'
+            .(isset($_SESSION['xGsaeUa']) ? $_SESSION['xGsaeUa'] : '').'"></td></tr>'.
+        '<tr><td><b>X-GSAE-LF</b></td><td><input style="width:400px" name="xGsaeLf" type="text" value="'
+            .(isset($_SESSION['xGsaeLf']) ? $_SESSION['xGsaeLf'] : '').'"></td></tr>'.
         '<tr><td><b>X-GSAE-AUTH</b></td><td><input style="width:400px" name="customHeader" type="text" value="'
             .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></td></tr>'.
         '<tr><td><b>REQ-SN</b></td><td><input style="width:400px" name="reqSn" type="text" value="'.session_id().'-rpcHelper"></td></tr>'.
@@ -398,6 +400,14 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $xGsaeUa = $_REQUEST['xGsaeUa'];
         if ($xGsaeUa != '') {
             $header[] = 'X-GSAE-UA: '.$xGsaeUa;
+        }
+    }
+    $_SESSION['xGsaeLf'] = '';
+    if (isset($_REQUEST['xGsaeLf'])) {
+        $_SESSION['xGsaeLf'] = $_REQUEST['xGsaeLf'];
+        $xGsaeLf = $_REQUEST['xGsaeLf'];
+        if ($xGsaeLf != '') {
+            $header[] = 'X-GSAE-LF: '.$xGsaeLf;
         }
     }
     $options = array(
