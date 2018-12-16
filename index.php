@@ -269,20 +269,9 @@ exit;
                 <div id="serversForm">
                     <form method="get" action="index.php">
                     <span>选择服务器:</span>
-                    <?php
-                    $arr = [];
-                    $s = '';
-                    foreach ($configArr as $k => $v) {
-                        if ($s != $v['name']) {
-                            $arr[] = [$v['name'], false, '', -1];
-                            $s = $v['name'];
-                        }
-                        $arr[] = ['¦− '.$v['url'], true, $v, $k];
-                    }
-                    ?>
                     <select name="server" id="serverSelect" onchange="chooseServer();">
-                        <?php foreach($arr as $v) { ?>
-                            <option <?php echo $v[1] == false ? 'disabled' : '' ?> value="<?php echo $v[3] ?>" <?php if ($_SESSION['selectedServer'] == $v[3]) { echo 'selected="selected" '; }?>><?php echo $v[0] ?></option>
+                        <?php foreach($configArr as $k => $v) { ?>
+                            <option value="<?php echo $k ?>" <?php if ($_SESSION['selectedServer'] == $k) { echo 'selected="selected" '; }?>><?php echo '【'.$v['name'].'】'.$v['url'] ?></option>
                         <?php } ?>
                     </select>
                     <input class="button" type="submit" value="OK" onclick="" />
