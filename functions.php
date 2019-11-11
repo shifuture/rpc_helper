@@ -304,6 +304,7 @@ function showResult()
 
     $serverURL = $_SESSION['URL'];
     displayResponse($serverURL, $response);
+    echo $response['log'];
 }
 
 /**
@@ -329,6 +330,8 @@ function isAjax()
  */
 function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '', $encoding = 'utf-8')
 {
+    $html = '';
+
     // correspondence rpc protocol - language (used for highlighter)
     $language = array(
         'xmlrpc'   => 'xml',
@@ -348,8 +351,8 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
 
     if ($_SESSION['DEBUG']) {
 
-        echo '<div class="t2">请求内容</div>';
-        echo '<pre id="request" class="t1">'.htmlspecialchars($message).'</pre>';
+        $html .= '<div class="t2">请求内容</div>';
+        $html .= '<pre id="request" class="t1">'.htmlspecialchars($message).'</pre>';
     }
 
     // Prepare to send the request using cURL (Client URL Library)
@@ -415,8 +418,8 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     );
 
     if ($_SESSION['DEBUG']) {
-        echo '<div class="t2">请求头</div>';
-        echo '<pre class="t1">' . implode(PHP_EOL, $header) . '</pre>';
+        $html .= '<div class="t2">请求头</div>';
+        $html .= '<pre class="t1">' . implode(PHP_EOL, $header) . '</pre>';
     }
 
     // set session cookie
@@ -468,11 +471,11 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     $contentType = isset($matches[0])?$matches[0]:"";
 
     if ($_SESSION['DEBUG']) {
-        echo '<div class="t2">响应内容 <b>'.round((mb_strlen($data, '8bit'))/1024, 3).'KB</b></div>';
-        echo '<pre id="response" class="t1">' . htmlspecialchars($data). '</pre>';
-        echo '<div class="t2">响应头</div>';
-        echo '<pre id="headers" class="t1">' . $headers . '</pre>';
-        echo '<div class="t2">耗时分析</div>';
+        $html .= '<div class="t2">响应内容 <b>'.round((mb_strlen($data, '8bit'))/1024, 3).'KB</b></div>';
+        $html .= '<pre id="response" class="t1">' . htmlspecialchars($data). '</pre>';
+        $html .= '<div class="t2">响应头</div>';
+        $html .= '<pre id="headers" class="t1">' . $headers . '</pre>';
+        $html .= '<div class="t2">耗时分析</div>';
         $execArr = [
             '请求内容加密：'.((intval($execTime2*10000) - intval($execTime1*10000))/10).'ms',
             '接口响应耗时：'.((intval($execTime4*10000) - intval($execTime3*10000))/10).'ms',
@@ -481,7 +484,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
             '开始请求：'.date('Y-m-d H:i:s', $execTime3).' '.$execTime3,
             '开始响应：'.date('Y-m-d H:i:s', $execTime4).' '.$execTime4,
         ];
-        echo '<pre id="headers" class="t1">'.implode(PHP_EOL, $execArr).'</pre>';
+        $html .= '<pre id="headers" class="t1">'.implode(PHP_EOL, $execArr).'</pre>';
     }
 
     //forward X HTTP headers
@@ -557,7 +560,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $decodedResponse = $decodedResponse['result'];
     }
 
-    return array('response' => $decodedResponse, 'attachments' => $attachments);
+    return array('response' => $decodedResponse, 'attachments' => $attachments, 'log' => $html);
 
     /*
     // SSL REQUESTS
