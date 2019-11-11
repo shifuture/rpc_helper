@@ -8,11 +8,11 @@ function init()
 {
     // Load configuration file
     loadConfig();
-    
+
     if (!defined('NAME')) {
         define('NAME', 'Web Service Tester');
     }
-    
+
     if ( !defined('LIB_PATH') ) {
         define( 'LIB_PATH', dirname( __FILE__ ) . '/lib/' );
     }
@@ -20,13 +20,13 @@ function init()
     if (defined('TIMEZONE')) {
         date_default_timezone_set(TIMEZONE);
     }
-    
+
     // Setup content type
     header('Content-Type: text/html; charset=UTF-8');
 
     // load Text_Highlighter if possible
     @include_once('Text/Highlighter.php');
-    
+
     // Session setup
     session_name('webservicetesttool');
     session_start();
@@ -272,10 +272,10 @@ function displayParams($p, $n = 'params', $multiply = false, $depth = 0) {
         $comment = isset($val['comment']) ? $val['comment'] : '';
         $str .= "<span style=\"color: #8B0000\">$comment</span>";
         $str .= '</td>'."\n";
-        
+
         // parameter description if any
         $str .= '<td class="description">' . $val['description'] . '</td>';
-        
+
         $str .= '</tr>';
     }
     $str .= '</table>';
@@ -290,17 +290,13 @@ function displayParams($p, $n = 'params', $multiply = false, $depth = 0) {
  */
 function showResult()
 {
-    if ($_SESSION['DEBUG']) {
-        echo "***************************************************************<br/>";
-    }
     $params = makeMessageParams($_SESSION['functionParams'], $_POST['protocol']);
     if (!empty($_POST['customPacket'])) {
         $response = sendRequest($_SESSION['selectedFunction'], $params, $_POST['protocol'], $_SESSION['URL'], $_POST['customPacket']);
     } else {
         $response = sendRequest($_SESSION['selectedFunction'], $params, $_POST['protocol'], $_SESSION['URL']);
     }
-    echo "***************************************************************";
-    
+
     // save the attachments
     foreach ($response['attachments'] as $filename => $content) {
         file_put_contents(dirname(__FILE__) . '/upload/' . $filename, $content);
@@ -350,12 +346,10 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
                );
     $message = ($payload !== '') ? $payload : rpc_encode_request($functionName, $params, $options);
 
-    if ($_SESSION['DEBUG'])
-    {
-        echo '---SENT---';
-        echo '<pre id="request">';
-        echo htmlspecialchars($message). "<br/>";
-        echo '</pre>';
+    if ($_SESSION['DEBUG']) {
+
+        echo '<div class="t2">请求内容</div>';
+        echo '<pre id="request" class="t1">'.htmlspecialchars($message).'</pre>';
     }
 
     // Prepare to send the request using cURL (Client URL Library)
@@ -364,15 +358,15 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     $tmpfile = UPLOAD_DIR . '/' . uniqid('message_');
 
     // write the message to temp file
+    $execTime1 = microtime(true);
     if ($_SESSION['RSA']) {
         $message = rsaEncode($message);
     }
+    $execTime2 = microtime(true);
     file_put_contents($tmpfile, $message);
 
     $fh = fopen($tmpfile, 'r');
 
-    // initialize the curl session
-    $ch = curl_init($serverURL);
     // set options
     $header = array(
         'X-Client: ' . CLIENT_TYPE,
@@ -420,6 +414,11 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         CURLOPT_RETURNTRANSFER => true            // return the response
     );
 
+    if ($_SESSION['DEBUG']) {
+        echo '<div class="t2">请求头</div>';
+        echo '<pre class="t1">' . implode(PHP_EOL, $header) . '</pre>';
+    }
+
     // set session cookie
     if (isset($_SESSION['session']) && $functionName !== LOGIN_METHOD) {
         $options[CURLOPT_COOKIE] = sprintf('%s=%s', $_SESSION['storedSessions'][$_SESSION['session']]['sessionName'], $_SESSION['session']);
@@ -430,17 +429,19 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $userpwd = HTTP_BASIC_AUTH_USER . ':' .  HTTP_BASIC_AUTH_PASS;
         $options[CURLOPT_USERPWD] = $userpwd;
     }
-    
-    curl_setopt_array($ch, $options);
 
+    // initialize the curl session
+    $execTime3 = microtime(true);
+    $ch = curl_init($serverURL);
+    curl_setopt_array($ch, $options);
     // get the response
     $response = curl_exec($ch);
-
     // close curl session
     curl_close($ch);
-
+    $execTime4 = microtime(true);
     // close the file handler and remove the file
     fclose($fh);
+
     unlink($tmpfile);
 
     $data = $response;
@@ -449,28 +450,38 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $exception = new Exception('There is no response from server ' . $serverURL, 1);
         throw $exception;
     }
-    
+
     // separate the headers and the data from the response
     $headers = null;
     if ($n = strpos($response, "\r\n\r\n")) { // CRLF CRLF
         $headers = substr($response, 0, $n);
         $data = substr($response, $n + 4);
     }
+    $execTime5 = microtime(true);
     if ( $_SESSION['RSA']) {
         $data = rsaDecode($data);
     }
+    $execTime6 = microtime(true);
 
     // get content type
     preg_match('/Content-Type:.*/', $headers, $matches);
     $contentType = isset($matches[0])?$matches[0]:"";
 
     if ($_SESSION['DEBUG']) {
-        echo '---GOT---' . "\n";
+        echo '<div class="t2">响应内容 <b>'.round((mb_strlen($data, '8bit'))/1024, 3).'KB</b></div>';
+        echo '<pre id="response" class="t1">' . htmlspecialchars($data). '</pre>';
+        echo '<div class="t2">响应头</div>';
+        echo '<pre id="headers" class="t1">' . $headers . '</pre>';
+        echo '<div class="t2">耗时分析</div>';
+        $execArr = [
+            '请求内容加密：'.((intval($execTime2*10000) - intval($execTime1*10000))/10).'ms',
+            '接口响应耗时：'.((intval($execTime4*10000) - intval($execTime3*10000))/10).'ms',
+            '响应内容解密：'.((intval($execTime6*10000) - intval($execTime5*10000))/10).'ms',
 
-        echo '<pre id="headers">' . $headers . '</pre>';
-        echo '<pre id="response">' . htmlspecialchars($data). '</pre><br/>';
-        echo '---END---<br/>' . "\n";
-        echo '</pre>';
+            '开始请求：'.date('Y-m-d H:i:s', $execTime3).' '.$execTime3,
+            '开始响应：'.date('Y-m-d H:i:s', $execTime4).' '.$execTime4,
+        ];
+        echo '<pre id="headers" class="t1">'.implode(PHP_EOL, $execArr).'</pre>';
     }
 
     //forward X HTTP headers
@@ -507,10 +518,10 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
     }
 
     $attachments = array();
-    
+
     // if content type is multipart/mixed
     if (0 === strpos($contentType, 'Content-Type: multipart/mixed')) {
-        
+
         // get the boundary - try with and without quoted value
         if (!preg_match('/boundary="(.*)"/', $contentType, $matches)) {
             preg_match('/boundary=(.*)$/', $contentType, $matches);
@@ -522,7 +533,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
 
         // iterate over message parts, and map name to content
         foreach($message->getParts() as $part) {
-            
+
             if (!isset($methodResponse)) {
                 // the first one is the method response
                 $methodResponse = $part->getContent();
@@ -532,7 +543,7 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
                 if (0 !== preg_match('/name="(.*)"/', $headers, $matches) || 0 !== preg_match('/name=(.*)$/', $headers, $matches)) {
                     $name = $matches[1];
                 }
-                
+
                 $attachments[$name] = $part->getContent();
             }
         }
@@ -943,7 +954,7 @@ function displayResponse($url, $response)
             echo '<span id="attachments">Attachments:</span> ';
             $attachmentBaseUrl = 'upload/';
             foreach (array_keys($response['attachments']) as $filename) {
-                
+
                 echo '<a href="'. $attachmentBaseUrl . $filename . '">' . $filename . '</a> &nbsp; ';
             }
         }
@@ -1060,7 +1071,7 @@ function clear_comments($str)
 function clearWhiteSpaces($str)
 {
     $separator = "'";
-    
+
     // split on parameter description
     $parts = explode($separator, $str);
 
@@ -1417,7 +1428,7 @@ function rpc_encode_request($functionName, $params, $options)
 function jsonrpc_request($functionName, $params)
 {
     global $servers;
-    $_SESSION['id'] = isset($_SESSION['id'])?intval($_SESSION['id'])+1:1; 
+    $_SESSION['id'] = isset($_SESSION['id'])?intval($_SESSION['id'])+1:1;
     $request = array(
         'id' => $_SESSION['id'],
         'jsonrpc'=> "2.0",
