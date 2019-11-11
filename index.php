@@ -292,22 +292,18 @@ exit;
                 </div>
                 <div id="links"><?php showLinks(); ?></div>
         </div>
+        <div id="inputData">
+            <?php echo $inputForm; ?>
+        </div>
         <div id="content">
-                <div id="inputData">
-                    <?php echo $inputForm; ?>
-                </div>
-                <div id="helpers">
-                <?php
-		 createHelper();
-                ?>
-                </div>
-                <div id="resultData">
-                <?php
-                    if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_GET['multiply'])) {
-                        echo $resultData;
-                    }
-                ?>
-                </div>
+            <div id="helpers"><?php createHelper(); ?></div>
+            <div id="resultData">
+            <?php
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_GET['multiply'])) {
+                    echo $resultData;
+                }
+            ?>
+            </div>
         </div>
     </body>
 </html>
