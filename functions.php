@@ -152,6 +152,8 @@ function displayAppKey(&$p) {
             .(isset($_SESSION['xGsaeLf']) ? $_SESSION['xGsaeLf'] : '').'"></td></tr>'.
         '<tr><td><b>X-GSAE-AUTH</b></td><td><input style="width:400px" name="customHeader" type="text" value="'
             .(isset($_SESSION['customHeader']) ? $_SESSION['customHeader'] : '').'"></td></tr>'.
+        '<tr><td><b>X-GSAE-ROLE-INDEX-ID</b></td><td><input style="width:400px" name="xGsaeRoleIndexId" type="text" value="'
+            .(isset($_SESSION['xGsaeRoleIndexId']) ? $_SESSION['xGsaeRoleIndexId'] : '').'"></td></tr>'.
         '<tr><td><b>REQ-SN</b></td><td><input style="width:400px" name="reqSn" type="text" value="'.session_id().'-rpcHelper"></td></tr>'.
     '</table>';
 }
@@ -405,6 +407,14 @@ function sendRequest($functionName, $params, $protocol, $serverURL, $payload = '
         $xGsaeLf = $_REQUEST['xGsaeLf'];
         if ($xGsaeLf != '') {
             $header[] = 'X-GSAE-LF: '.$xGsaeLf;
+        }
+    }
+    $_SESSION['xGsaeRoleIndexId'] = '';
+    if (isset($_REQUEST['xGsaeRoleIndexId'])) {
+        $_SESSION['xGsaeRoleIndexId'] = $_REQUEST['xGsaeRoleIndexId'];
+        $xGsaeRoleIndexId = $_REQUEST['xGsaeRoleIndexId'];
+        if ($xGsaeRoleIndexId != '') {
+            $header[] = 'X-GSAE-ROLE-INDEX-ID: '.$xGsaeRoleIndexId;
         }
     }
     $options = array(
